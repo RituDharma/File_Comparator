@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Testing Document</title>
+</head>
+<body>
+       <p id="data">"Hello"</p>
+       <button onclick="getData()">Result</button>
+       <script type="text/javascript">
+       		function getData()
+       		{
+       			//document.getElementById('data').innerHTML="Here is the comparision";
+       			var xmlhttp = new XMLHttpRequest();
+       			var url="http://localhost:3000/db";
+       			xmlhttp.open("GET",url, true);
+                xmlhttp.send();
+                xmlhttp.onreadystatechange = function() {
+	                if (this.readyState == 4 && this.status == 200) {
+	                    
+	                    var arr=JSON.parse(this.responseText);
+	                    var obj=JSON.stringify(arr);
+                      document.getElementById("data").innerHTML=this.responseText;
+	                }      
+                }
+            }
+       	
+       </script>
+</body>
+</html>

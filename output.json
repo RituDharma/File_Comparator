@@ -1,0 +1,14 @@
+{
+  "base": {
+    "word_count": 1368,
+    "nouns": 714,
+    "adverbs": 22,
+    "spelling": 0
+  },
+  "test": {
+    "word_count": 1280,
+    "nouns": 691,
+    "adverbs": 18,
+    "spelling": 0
+  }
+}
