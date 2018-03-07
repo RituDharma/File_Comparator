@@ -1,14 +1,19 @@
 {
   "base": {
-    "word_count": 1368,
-    "nouns": 714,
-    "adverbs": 22,
-    "spelling": 0
+    "word_count": 1282,
+    "nouns": 309,
+    "adjectives": 83,
+    "verbs": 36,
+    "keys_found": 37
   },
   "test": {
-    "word_count": 1280,
-    "nouns": 691,
-    "adverbs": 18,
-    "spelling": 0
+    "word_count": 1138,
+    "nouns": 286,
+    "adjectives": 67,
+    "verbs": 30,
+    "keys_found": 36
+  },
+  "matching": {
+    "percentage_matching": 63.888888888888886
   }
 }

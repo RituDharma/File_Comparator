@@ -1,160 +1,149 @@
 var fs=require('fs');
 var natural = require('natural');
-var pos = require('pos');
-var wordcount = require('wordcount');
-//var Regex = require("regex");
-var tokenizer = new natural.WordTokenizer();
-var wordbase=0;
-var c=0;
-var r=0;
-var z=" ";
-var nn=0, rb=0;
+var nounbase=0,adjectivebase=0,verbbase=0;
+var nountest=0,adjectivetest=0,verbtest=0;
+var pre=0;
+var tagbase=0, tagtest=0;
 
+//files for finding parts of speech
+var path = require("path");
+var base_folder = path.join(path.dirname(require.resolve("natural")), "brill_pos_tagger");
+var rulesFilename = base_folder + "/data/English/tr_from_posjs.txt";
+var lexiconFilename = base_folder + "/data/English/lexicon_from_posjs.json";
+var defaultCategory = 'N';
+var lexicon = new natural.Lexicon(lexiconFilename, defaultCategory);
+var rules = new natural.RuleSet(rulesFilename);
+var tagger = new natural.BrillPOSTagger(lexicon, rules);
 
-var c1=0;
-var wc=0;
-var token=" ";
-var wcount=0;
-var spell=0; 
-var nn1=0, rb1=0;  
-	
-//basefile    
-var marks=0;
-var text;
-var textract = require('textract');
-var basefile=function(){
-		textract.fromFileWithPath("file1.docx", function( error, text ) {
-	// divided into tokens
-	    z = tokenizer.tokenize(text);
-	//word count
-   	    wordbase=wordcount(text);	
-	//spell checker
-		SpellChecker = require ('spellchecker');
-		for(var i in z)
-			{
-			    r=SpellChecker.isMisspelled(z[i]);
-					if(r==true)
-					{
-						console.log('Misspelled words are:' + r[i]);
-					    c++;
-					    
-					} 
-			}
-	//noun pronoun and adverb	       
-				var words = new pos.Lexer().lex(text);
-                var tagger = new pos.Tagger();
-                var taggedWords = tagger.tag(words);
-                for (i in taggedWords) {
-				    var taggedWord = taggedWords[i];
-				    var word = taggedWord[0];
-				    var tag = taggedWord[1];
-				    if(tag=='NN' || tag=='WP' || tag=='PRP')//nouns, pronoun
-					    nn++;   
-				    if(tag=='RB')//adverbs	
-	                    rb++;
-				}
-			//resolve('success');
-			    testfile();
-	    });
+//base file read
+var basedata = fs.readFileSync('./documents/file.txt', 'utf8');
+var baseword= wordCount(basedata);
+var tokenbase=basedata.split(/\W+/);
+    console.log("Number Of words in base file: "+baseword);
+
+//test file read
+var testdata= fs.readFileSync('./documents/file1.txt', 'utf8');
+var tokentest=testdata.split(/\W+/);
+var testword= wordCount(testdata);
+if(testword>=baseword-500 || testword<=baseword+500){
+    console.log("Number Of words in test file: "+testword);
 }
 
-//test document
-var content;
-var testfile=function(){
-	//var promise= new Promise(function(resolve,reject){
-	textract.fromFileWithPath("file.txt", function( error,content) {
-	         	var natural = require('natural');
-	        	var tokenizer = new natural.WordTokenizer();
-			    token = tokenizer.tokenize(content);
-	//word count
-				wc=wordcount(content);
-				if(wc>=(wordbase-500) && wc<=(wordbase+500))
-					wcount=wc;
-				
-	//spell checker
-				SpellChecker = require ('spellchecker');
-					for(var i in token)
-					{
-					    spell=SpellChecker.isMisspelled(token[i]);
-					    if(spell==true)
-					    {
-					     	c1++;
-					     	console.log('Misspelled words are:' + spell[i]);
-					   	} 
-					}
-	//noun, pronoun and adverb			        
-		        
-				    var words = new pos.Lexer().lex(content);
-					var tagger = new pos.Tagger();
-					var taggedWords = tagger.tag(words);
-					for (i in taggedWords) {
-					    var taggedWord = taggedWords[i];
-					    var word = taggedWord[0];
-					    var tag = taggedWord[1];
-					    if(tag=='NN' || tag=='WP' || tag=='PRP')//nouns, pronoun
-						    nn1++;   
-					    if(tag=='RB')//adverbs	
-		                    rb1++;
-		            }		
-			      res();
-	    });
-	  
-}	
-//string matching
-/*var match=0;
-for (var i = 0; i < text.length; i++)
-{
-    for (var j = 0; j <content.length; j++)
-	{              
-        if (text[i] == content[j])
-                  { 
-                      match++;
-                  }
-    }
-}   
-           var per=0;
-           if (match <= text.length)
-               per = (match * 100) / text.length;
-           else
-               per = 100;
-    
-	
-console.log("matched: "+match);
-console.log("percentage: " + per)*/
-function res(){
-	console.log("\nBase doucument");
-    console.log("\nWord count: " + wordbase);
- 	console.log('number of misspelled words are:'+ c);
- 	console.log("noun: " +nn);
-	console.log("Adverbs: "+rb);
+//html tag file read
+var htmldata=fs.readFileSync('./documents/htmltag.txt', 'utf8');
+var tokenhtml=htmldata.split(/\W+/);
 
-
-    console.log("\nTest doucument");
-	console.log("\nWord count of test document: " + wcount);
- 	console.log('number of misspelled words are:'+ c1);
- 	console.log("noun: " +nn1);
-    console.log("Adverbs: "+rb1);
-    out();
+//word count function
+function wordCount(str){
+	return str.split(/\W+/).length;
 }
-function out(){
-   
-    var result={
-	   	 base:
-	   	 {
-	   	    word_count: wordbase,
-	   	    nouns: nn,
-	   	    adverbs:rb,
-	   	    spelling:c
 
-	     },
-	     test:
-	     {
-	       word_count: wcount,
-	   	    nouns: nn1,
-	   	    adverbs:rb1,
-	   	    spelling:c1     	
-	     }
+//calling functions
+matching(tokenbase,tokentest);
+pos(tokenbase,"base");
+pos(tokentest,"test");
+
+//matching percentage of files
+function matching(tokenbase,tokentest){
+	var match=0;
+    var matches=0;
+    for (var i = 0; i < tokenbase.length; i++)
+    {
+	              
+        if(tokenbase.indexOf(tokentest[i],0)===-1)
+            { 
+               match++;
+            }
+    }  
+    for (var i = 0; i < tokentest.length; i++)
+    {
+	              
+        if(tokentest.indexOf(tokenbase[i],0)===-1)
+            { 
+                matches++;
+            }
+
+    }  
+       pre=((match-matches)/match)*100
+        //console.log("Matched: "+pre);
+}
+
+// parts of speech
+function pos(tokens,str){
+	var posword=tagger.tag(tokens); 
+	for(var i=0;i<tokens.length;i++){
+		//for noun
+		if(posword[i][1]=='NN'|'NNS'|'NNP'|'NNPS'){
+			if(str=="base"){
+		     	nounbase++;
+		    }
+		    if(str=="test"){
+		    	nountest++;
+		    }
+		}
+		//for adjectives
+		else if(posword[i][1]=='JJ'|'JJS'|'JJR'){
+			if(str=="base"){
+		     	adjectivebase++;
+		    }
+		    if(str=="test"){
+		    	adjectivetest++;
+		    }
+		}
+		//for verbs
+		else if(posword[i][1]=='VB'|'VBD'|'VBG'|'VBN'|'VBP'|'VBZ'){
+			if(str=="base"){
+		     	verbbase++;
+		    }
+		    if(str=="test"){
+		    	verbtest++;
+		    }
+		}
 	}
+}
+//searching html tags
+for(var i=0; i<tokenhtml.length; i++){
+	for(var j=0; j<tokenbase.length; j++){
+		if(tokenhtml[i]==tokenbase[j])
+		{
+			tagbase=tagbase+1;
+			break;
+	    }
+	}	
+	for(var j=0; j<tokentest.length; j++)
+	{
+		if(tokenhtml[i]==tokentest[j])
+	    {
+			tagtest=tagtest+1;
+			break;
+		}
+	}
+}
+
+   
+var result={
+	base:
+	{
+	   	word_count: baseword,
+	   	nouns: nounbase,
+	   	adjectives: adjectivebase,
+	   	verbs: verbbase,
+	   	keys_found: tagbase
+
+	},
+	test:
+	{
+	    word_count: testword,
+	   	nouns: nountest,
+	   	adjectives: adjectivetest,
+	   	verbs: verbtest,
+	   	keys_found: tagtest	
+	},
+	matching:
+	{
+	    percentage_matching: pre  
+	}
+}
     var json= JSON.stringify(result,null,2);
     fs.writeFile('output.json',json,'utf8',(err)=>{
 		if(err){
@@ -164,6 +153,3 @@ function out(){
     console.log(result);
 
     });
-}
-
-basefile();

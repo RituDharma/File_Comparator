@@ -3,8 +3,9 @@
 <head>
 	<title>Testing Document</title>
 </head>
-<body>
-       <p id="data">"Hello"</p>
+<body bgcolor="pink">
+       <p id="data"><h1>Welcome to Document Comparator</h1>
+          Cilck for knowing the results</p>
        <button onclick="getData()">Result</button>
        <script type="text/javascript">
        		function getData()
@@ -18,8 +19,23 @@
 	                if (this.readyState == 4 && this.status == 200) {
 	                    
 	                    var arr=JSON.parse(this.responseText);
-	                    var obj=JSON.stringify(arr);
-                      document.getElementById("data").innerHTML=this.responseText;
+	                    //var obj=JSON.stringify(arr);
+                      //document.getElementById("data").innerHTML=this.responseText;
+                       var output=`<h1>Base Document</h1>
+                                   Word Count=${arr.base.word_count}
+                                   Nouns=${arr.base.nouns}
+                                   Adjectives=${arr.base.adjectives}
+                                   Verbs=${arr.base.verbs}
+                                   Keys Found=${arr.base.keys_found}
+                                   <h1>Test Document</h1>
+                                   Word Count=${arr.test.word_count}
+                                   Nouns=${arr.test.nouns}
+                                   Adjectives=${arr.test.adjectives}
+                                   Verbs=${arr.test.verbs}
+                                   Keys Found=${arr.test.keys_found}
+                                   `;
+                      document.getElementById("data").innerHTML=output;
+
 	                }      
                 }
             }
