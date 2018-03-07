@@ -1,10 +1,5 @@
 var fs=require('fs');
 var natural = require('natural');
-var nounbase=0,adjectivebase=0,verbbase=0;
-var nountest=0,adjectivetest=0,verbtest=0;
-var pre=0;
-var tagbase=0, tagtest=0;
-
 //files for finding parts of speech
 var path = require("path");
 var base_folder = path.join(path.dirname(require.resolve("natural")), "brill_pos_tagger");
@@ -15,14 +10,22 @@ var lexicon = new natural.Lexicon(lexiconFilename, defaultCategory);
 var rules = new natural.RuleSet(rulesFilename);
 var tagger = new natural.BrillPOSTagger(lexicon, rules);
 
+//varaiable declaration
+var nounbase=0,adjectivebase=0,verbbase=0;
+var nountest=0,adjectivetest=0,verbtest=0;
+var pre=0;
+var tagbase=0, tagtest=0;
+var basefile='./documents/basefile.txt';
+var testfile='./documents/testfile.txt';
+var htmlfile='./documents/htmltag.txt';
 //base file read
-var basedata = fs.readFileSync('./documents/file.txt', 'utf8');
+var basedata = fs.readFileSync(basefile,'utf8');
 var baseword= wordCount(basedata);
 var tokenbase=basedata.split(/\W+/);
     console.log("Number Of words in base file: "+baseword);
 
 //test file read
-var testdata= fs.readFileSync('./documents/file1.txt', 'utf8');
+var testdata= fs.readFileSync(testfile, 'utf8');
 var tokentest=testdata.split(/\W+/);
 var testword= wordCount(testdata);
 if(testword>=baseword-500 || testword<=baseword+500){
@@ -30,7 +33,7 @@ if(testword>=baseword-500 || testword<=baseword+500){
 }
 
 //html tag file read
-var htmldata=fs.readFileSync('./documents/htmltag.txt', 'utf8');
+var htmldata=fs.readFileSync(htmlfile, 'utf8');
 var tokenhtml=htmldata.split(/\W+/);
 
 //word count function
